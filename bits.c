@@ -60,11 +60,41 @@ int func3(int x) {
 	bit24 = bit24 & mask; //extract third block of 8 bits
 	bit32 = bit32 & mask; //extract fourth block of 8 bits
 
-	num = (bit32 << 24) + (bit24) + (bit16) + bit8; //recombine blocks of bits after extraction
+	num = (bit32 << 24) + (bit24 << 16) + (bit16 << 8) + bit8; //recombine blocks of bits after extraction
 
-	result = !num;
+	result = !num; //if result of extracted and combined blocks is greater than one, set to zero using logical !
 
-	return !result;
+	return !result; //if result is zero, return 1 using logical !
+}
+
+int func4(int x) {
+	//Function takes a single int as input, then check whether all odd-numbered bit is set to 1 and if so, returns 1
+	//takes input, divides into 4 8-bit blocks and applies a mask of 10101010 to transfer only odd bits, then checks for any 0's by using xor of mask
+
+	int num = x;
+	int mask = 0xAA; //bitmask to extract only odd numbered bits
+	int result;
+
+	int bit8 = num; //block of bits 0 - 7
+	int bit16 = num >> 8; //block of bits 8 - 15
+	int bit24 = num >> 16; //block of bits 16 - 23
+	int bit32 = num >> 24; //block of bits 24 - 31
+
+	bit8 = bit8 & mask; //extract first 8 bits
+	bit16 = bit16 & mask; //extract second block of 8 bits
+	bit24 = bit24 & mask; //extract third block of 8 bits
+	bit32 = bit32 & mask; //extract fourth block of 8 bits
+
+	bit8 = bit8 ^ mask; //check for zeroes by xor of mask
+	bit16 = bit16 ^ mask; //check for zeroes by xor of mask
+	bit24 = bit24 ^ mask; //check for zeroes by xor of mask
+	bit32 = bit32 ^ mask; //check for zeroes by xor of mask
+
+	num = (bit32 << 24) + (bit24 << 16) + (bit16 << 8) + bit8; //recombine blocks of bits after extraction and checking for zeroes
+
+	result = !num; //if remaining value of all blocks combined is 0, set to one and return using logical !
+
+	return result;
 }
 
 int main() {
@@ -73,22 +103,37 @@ int main() {
 	int y = 23756;
 
 	//int variables for run 2
-	int a = 42000;
-	int b = 10987;
+	int a = 4097;
+	int b = 42000;
 
 	//int variables for run 3
 	int g = 72157;
 	int h = 38764;
 
+	//int for function 4 testing
+	int j = 2863311530;
+	int k = 0xFFFFFFFF;
+
 	//runs for function 1
 	printf("func1(%d,%d)= [%d] Expecting [23624]\n", x, y, func1(x, y));
-	printf("func1(%d,%d)= [%d] Expecting [8192]\n", a, b, func1(a, b));
+	printf("func1(%d,%d)= [%d] Expecting [0]\n", a, b, func1(a, b));
 	printf("func1(%d,%d)= [%d] Expecting [4428]\n", g, h, func1(g, h));
 
 	//runs for function 2
 	printf("func2(%d,%d)= [%d] Expecting [33174]\n", x, y, func2(x, y));
-	printf("func2(%d,%d)= [%d] Expecting [36603]\n", a, b, func2(a, b));
+	printf("func2(%d,%d)= [%d] Expecting [46097]\n", a, b, func2(a, b));
 	printf("func2(%d,%d)= [%d] Expecting [102065]\n", g, h, func2(g, h));
+
+	//runs for function 3
+	printf("func3(%d)= [%d] Expecting [1]\n", x, func3(x));
+	printf("func3(%d)= [%d] Expecting [1]\n", y, func3(y));
+	printf("func3(%d)= [%d] Expecting [0]\n", a, func3(a));
+
+	//runs for function 4
+	printf("func4(%d)= [%d] Expecting [0]\n", x, func4(x));
+	printf("func4(%d)= [%d] Expecting [1]\n", j, func4(j));
+	printf("func4(%d)= [%d] Expecting [1]\n", k, func4(k));
+
 
 	return 1;
 }
